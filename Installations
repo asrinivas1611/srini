@@ -1,5 +1,21 @@
+######Download & Install Packages
+# JDK Install
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/opt/incoming/VZjdk-1.8.0_172_b31_64bit-Linux.rpm https://oneartifactory.verizon.com/artifactory/VVOV_SSP/WILDFLY_PACKAGES/VZjdk-1.8.0_172_b31_64bit-Linux.rpm
+rpm -ihv --ignorearch --ignoreos --nodeps /apps/opt/incoming/VZjdk-1.8.0_172_b31_64bit-Linux.rpm
+# Set Java Path
+export PATH=$PATH:`ls -d /apps/opt/jdk*/bin | tail -1`
+##SetJavaPath in profile
+echo -e "export PATH=$PATH:`ls -d /apps/opt/jdk*/bin | tail -1`" >> ~/.bash_profile
+#########################################################################################
+# Tomcat Install
+#########################################################################################
+wget -P /apps/opt/incoming http://apache.spinellicreations.com/tomcat/tomcat-8/v8.5.45/bin/apache-tomcat-8.5.45.tar.gz
+#curl -v --proxy http://proxy.ebiz.verizon.com:80 --proxy-ntlm --proxy-user "VDSI\\v432155" -o /apps/opt/incoming/apache-tomcat-8.5.45.tar.gz http://apache.spinellicreations.com/tomcat/tomcat-8/v8.5.45/bin/apache-tomcat-8.5.45.tar.gz
+tar -zxvf /apps/opt/incoming/apache-tomcat-8.5.45.tar.gz -C /apps/opt
+
+##########################################################################################
 #Install MySQL
-#############
+##########################################################################################
 
 #!/bin/bash
 # Description: Set up MySQL Community Release 5.7
@@ -21,11 +37,61 @@ echo "ALTER USER 'root'@'localhost' IDENTIFIED BY 'Newhakase-labs123@'; flush pr
 # Log in to the server with the temporary password, and pass the SQL file to it.
 mysql -u root --password="$temp_password" --connect-expired-password < reset_pass.sql
 
+##########################################################################################
+#Install Jenkins
+##########################################################################################
+
+#Jenkins Install
+#curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/opt/incoming/jenkins.war https://oneartifactory.verizon.com/artifactory/VVOV_SSP/TURBODEPLOYER_PACKAGES/jenkins.war
+wget -P /apps/opt/incoming http://mirrors.jenkins.io/war-stable/latest/jenkins.war
+cp /apps/opt/incoming/jenkins.war /apps/opt/apache-tomcat-8.5.45/webapps/
+#cat /root/.jenkins/secrets/initialAdminPassword = admin 940f550686dc4e72af5c445c636260ee - password set to 9ol.>LO(
+# http://10.118.2.163:8080/jenkins
+
+#http://10.118.2.163:8080/jenkins/job/VCIT.VVOV.TEST.BUILD/configure
+
+
+
+##########################################################################################
 #Install Python modules
-#######################
+##########################################################################################
+pip install mysql.connector
+pip install pymssql
 
 
 
 
 
-Install 
+
+
+##########################################################################################
+#Install
+##########################################################################################
+
+
+
+
+
+
+##########################################################################################
+#Install
+##########################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
