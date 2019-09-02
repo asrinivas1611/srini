@@ -1,0 +1,36 @@
+#!/bin/bash
+#SCRIPT PURPOSE - CRUD operations - mysql db
+#############################################
+DBNAME="srinivas_db"
+TABLENAME="srinivas_table"
+drp_crt_db(){
+mysql -u root -p1qazZAQ! -e "DROP DATABASE IF EXISTS $DBNAME ; SHOW DATABASES;"
+mysql -u root -p1qazZAQ! -e "CREATE DATABASE IF NOT EXISTS $DBNAME ; SHOW DATABASES;"
+}
+drp_crt_tbl(){
+mysql -u root -p1qazZAQ! -D $DBNAME <<EOF
+DROP TABLE IF EXISTS $TABLENAME;
+CREATE TABLE IF NOT EXISTS $TABLENAME (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+appcode VARCHAR(8),
+appname VARCHAR(20),
+env VARCHAR(20),
+host VARCHAR(30) NOT NULL UNIQUE,
+ip VARCHAR(20) UNIQUE,
+ports VARCHAR(30),
+domains VARCHAR(50));
+SHOW TABLES;
+DESCRIBE $TABLENAME;
+INSERT INTO $TABLENAME (id,appcode,appname,env,host,ip,ports,domains) VALUES (NULL, "vvov", "ordering","prod", "vvoscpa6.verizon.com", "159.161.163.86","9001,8001,7001","SSP-BS,SSP-DS,SSP-PCAT");
+INSERT INTO $TABLENAME (id,appcode,appname,env,host,ip,ports,domains) VALUES 
+(NULL, "vvov", "ordering","prod", "vvoscpa7.verizon.com", "159.161.163.87","9001,8001,7001","SSP-BS,SSP-DS,SSP-PCAT"),
+(NULL, "vvov", "ordering","prod", "vvoscpa8.verizon.com", "159.161.163.88","9001,8001,7001","SSP-BS,SSP-DS,SSP-PCAT"),
+(NULL, "vvov", "ordering","prod", "vvoscpa9.verizon.com", "159.161.163.91","9001,8001,7001","SSP-BS,SSP-DS,SSP-PCAT"),
+(NULL, "vvov", "flow","prod", "spfscpa6.verizon.com", "159.161.167.226","7001,8001","FLOWENGINE,eventsceduler"),
+(NULL, "vvov", "flow","prod", "spfscpa7.verizon.com", "159.161.167.227","7001,8001","FLOWENGINE,eventsceduler");
+select * from $TABLENAME;
+EOF
+}
+drp_crt_db ; 
+drp_crt_tbl ;
+
+#################################################################################################
