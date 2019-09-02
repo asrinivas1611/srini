@@ -1,0 +1,137 @@
+#!/usr/bin/python
+#Program Author : Srinivas Abbireddy
+#Program Date : 10 August 2019
+#==================================================
+import os
+
+cmd = '''#!/bin/bash
+DOMAIN=$( hostname |cut -f2-4 -d. )
+if [ $DOMAIN = 'ebiz.verizon.com' ]; then
+    #nonprod
+    HTTP_PROXY="http://proxy.ebiz.verizon.com:80/"
+    HTTPS_PROXY="http://proxy.ebiz.verizon.com:80/"
+    http_proxy="http://proxy.ebiz.verizon.com:80/"
+    https_proxy="http://proxy.ebiz.verizon.com:80/"
+    vz_proxy="proxy.ebiz.verizon.com"
+    no_proxy=localhost.localdomain,169.254.169.254,verizon.com,ebiz.verizon.com,vpc.verizon.com
+    export HTTP_PROXY HTTPS_PROXY http_proxy https_proxy no_proxy vz_proxy
+elif [ $DOMAIN = 'vpc.verizon.com' ]; then
+    #prod and staging
+    HTTP_PROXY="http://vzproxy.verizon.com:80/"
+    HTTPS_PROXY="http://vzproxy.verizon.com:80/"
+    http_proxy="http://vzproxy.verizon.com:80/"
+    https_proxy="http://vzproxy.verizon.com:80/"
+    vz_proxy="vzproxy.verizon.com"
+    no_proxy=localhost.localdomain,169.254.169.254,verizon.com,ebiz.verizon.com,vpc.verizon.com
+    export HTTP_PROXY HTTPS_PROXY http_proxy https_proxy no_proxy vz_proxy
+fi
+
+for pkg in 'mysql.connector' 'xlrd' 'pymssql' ; do ( python -c "import $pkg" && echo packageexist || (pip install $pkg) ) ; done '''
+
+with open('script','w') as f:
+    f.write(cmd)
+
+import subprocess
+subprocess.call(["bash", "script"])
+subprocess.call(["rm", "script"])
+import requests
+#import random
+import time
+import datetime
+#import pymssql
+import xlrd
+import mysql.connector
+#python -c "import datetime ; now = datetime.datetime.now() ; print(now.strftime('%Y-%m-%d %H:%M:%S'))"    #
+#raw_input("\n\nPress the enter key to exit.")
+
+conn = mysql.connector.connect(
+  host="10.118.2.163",
+  port="3306",
+  user="srini",
+  passwd="9ol.>LO(",
+  database ="server_db"
+)
+c = conn.cursor()
+def drop_table():
+	c.execute('DROP TABLE IF EXISTS source')
+	c.execute('DROP TABLE IF EXISTS final')
+def create_table():
+	c.execute('CREATE TABLE IF NOT EXISTS source(name TEXT, host TEXT, port TEXT, uri TEXT)')
+	c.execute('CREATE TABLE IF NOT EXISTS final(name TEXT, host TEXT, port TEXT, uri TEXT, statuscode TEXT, curtime TEXT)')
+def data_entry():
+	#(name,host,port,uri)   (name,host,port,uri,statuscode,curtime)
+	c.execute("INSERT INTO source VALUES ('asg1', '143-251-15-63.vpc.verizon.com', '8051', '/KAOrderView/KAOrderView.html,/KAOrderView/KAOrderView.html,/KAOrderView/KAOrderView.html')")
+	c.execute("INSERT INTO source VALUES ('asg2', '143-251-4-122.vpc.verizon.com', '8051', '/KAOrderView/KAOrderView.html')")
+	c.execute("INSERT INTO source VALUES ('asg3', '143-251-8-143.vpc.verizon.com', '8051', '/KAOrderView/KAOrderView.html')")
+	c.execute("INSERT INTO source VALUES ('asg4', '143-251-0-184.vpc.verizon.com', '8051', '/KAOrderView/KAOrderView.html')")
+	conn.commit()
+def data_entrywithexcel():
+	loc = ("/tmp/source.xlsx")
+	wb = xlrd.open_workbook(loc)
+	sheet = wb.sheet_by_index(0)
+	for r in range(1, sheet.nrows):
+                    name = sheet.cell(r,0).value
+                    host = sheet.cell(r,1).value
+                    port = sheet.cell(r,2).value
+                    uri = sheet.cell(r,3).value
+                    query = "INSERT INTO source (name,host,port,uri) VALUES (%s,%s,%s,%s)"
+                    value = name,host,port,uri
+                    c.execute(query, value)
+	conn.commit()
+def read_from_sourcedb():
+	c.execute("select * from source")
+	#singlerecord = c.fetchone()
+	multiplerecord = c.fetchall()
+	#print(singlerecord[1])
+	#print(data)
+	for row in multiplerecord:
+		print(row)
+		#print('{0}:{1}'.format(row[0],row[1]))
+		
+def read_from_finaldb():
+	c.execute("select * from final")
+	multiplerecord = c.fetchall()
+	for row in multiplerecord:
+		print(row)
+		
+def mprg():
+	c.execute("select * from source")
+	multiplerecord = c.fetchall()
+	for row in multiplerecord:     #print(a.split(","))
+		NAME1 = (row[0])
+		HOST1 = (row[1])
+		PORT1 = (row[2])
+		URI1 = (row[3])
+		for asg in NAME1.split(","):
+			for serv in HOST1.split(","):
+				for por in PORT1.split(","):
+					for ur in URI1.split(","):
+						url = ('http://'+serv+':'+por+ur)
+						#print (url)
+						http = urllib3.PoolManager()
+						resp = http.request('GET', url)
+						statuscode = resp.status
+						now = datetime.datetime.now()
+						tim = now.strftime("%d-%m.%H:%M")
+						#var1 = "('{}', '{}', '{}', '{}', '{}', '{}')"
+						var2 = asg, serv, por, ur, statuscode, tim
+						print var2
+						#print(var1.format(serv, por, ur, statuscode, tim))
+						#sql_insert = """INSERT INTO final (name, host, port, uri, statuscode, curtime) VALUES (var1.format(asg, serv, por, ur, statuscode, tim))"""
+						#
+						sql_insert = """INSERT INTO final (name, host, port, uri, statuscode, curtime) VALUES (?,?,?,?,?,?)"""
+						#print sql_insert
+						#('asg', 'serv', 'por', 'ur', 'statuscode', 'tim')
+						result = c.execute(sql_insert, var2)
+						conn.commit()
+drop_table()
+create_table()
+#data_entry()
+data_entrywithexcel()
+read_from_sourcedb()
+print('====================================================================')
+#mprg()
+print('====================================================================')
+read_from_finaldb()
+c.close()
+conn.close()
