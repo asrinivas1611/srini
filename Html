@@ -1,0 +1,148 @@
+##########################################################################
+#Create Html
+##########################################################################
+echo -e "<!DOCTYPE html><head><title>Srinivas</title></head><body><h1>Hello…This is test page</h1></body></html>"
+
+
+##########################################################################
+#Basic Html Template
+##########################################################################
+
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+	<title>Srinivas</title>
+	<link rel='stylesheet' type="text/css" href="styles.css" media="all">
+</head>
+
+<body>
+	<header>
+		<img src="verizon-logo.png">
+		<h1>Verizon</h1>
+		<h2>ASGFLS</h2>
+	</header>
+	
+	<div class="nav">
+		<ul>
+			<li><a class="active" href="index.html">Home</a></li>
+			<li><a href="p1.html">Page 1</a></li>
+			<li><a href="p2.html">Page 2</a></li>
+			<li><a href="contact.html">contact</a></li>
+		</ul>
+	</div>
+	
+	<div class="content">
+		<article>
+			<h2>First Article</h2>
+			<p>My first paragraph.</p>
+			<br>
+			<p>My Second paragraph.</p>
+	</article>
+	</div>
+	
+	
+	<div class="footer">
+		<p>Copyright © www.srinivas.com </p>
+	</div>
+
+
+</body>
+</html>
+
+##########################################################################
+CSS Template
+##########################################################################
+body {
+	font-family: times, arial, serif;
+	background-color: #C3DDDD;
+	
+}
+
+header {
+	background-color: #094462;
+	color: white;
+	padding: 10px;
+	margin: 0;
+	overflow: hidden;
+}
+
+header img {
+	float: left;
+	width: 100px;
+	height: 100px;
+	margin-right: 10px;
+	border:2px solid black;
+
+}
+
+header img:hover{
+	border-radius: 80px;
+	box-shadow: 2px 2px 5px 1px;
+	border:5px solid grey;
+}
+
+header h1 {
+	padding: 0;
+	margin: 0;
+	font-size: 2.2em;
+}
+
+header h2 {
+	padding: 0;
+	margin: 0;
+	font-size: 1.2em;
+}
+
+.nav ul {
+	list-style-type: none;
+	background-color: #f1f1f1;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+.nav li {
+	float: left;
+}
+
+.nav li a{
+	text-decoration: none;
+	padding: 10px 25px;
+	display: block;
+	color: black;
+}
+
+
+.nav li a:hover{
+	background-color: black;
+    color: white;
+}
+.nav li a.active{
+	background-color: black;
+    color: white;
+}
+
+.content {
+	padding: 0 10px;
+	border: 2px double #094462;
+}
+
+.content h1 {
+	margin: 5px 0 0 0;
+	font-size: 1.6em;
+	color: #094462;
+}
+
+.content img {
+	float: right;
+	margin: 10px;
+	box-shadow: 2px 3px 5px 1px;
+}
+
+.footer {
+	padding: 0 10px;
+	color: white;
+	background-color: #094462;
+}
+
+##################################################################
