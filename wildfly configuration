@@ -98,3 +98,41 @@ Is this new user going to be used for one AS process to connect to another AS pr
 e.g. for a slave host controller connecting to the master or for a Remoting connection for server to server EJB calls.
 yes/no? no
 [jboss@10-118-3-136 ~]$
+
+##########################################################################
+vi /apps/etc/SSI/host.10-118-3-136.ebiz.verizon.com.wildfly.cpe-srv01
+
+[jboss@10-118-3-136 SSI]$ cat host.10-118-3-136.ebiz.verizon.com.wildfly.cpe-srv01
+# sample SSI contents
+# location of java installation to use
+SERVER_JAVA_HOME=/usr
+# location of wildfly installation to use
+SERVER_WILDFLY_HOME=/apps/opt/wildfly/wildfly-17.0.0.Final
+# directory in which the instance config is located; will also contain temp/data/logs
+# directory and the logs subdir must be writable by mdware group)
+# and outside of /apps/opt/wildfly
+SERVER_CONFIG_HOME=/apps/opt/cpe/config/cpe-srv01/
+# minimum heap size (in MB)
+SERVER_MIN_HEAP=64
+# maximum heap size (in MB)
+SERVER_MAX_HEAP=256
+#ports to use
+# incoming http traffic
+SERVER_HTTP_PORT=9090
+# incoming https traffic
+SERVER_HTTPS_PORT=9443
+# incoming traffic to management server
+SERVER_MGMT_HTTP_PORT=9991
+# incoming traffic to management server (https)
+SERVER_MGMT_HTTPS_PORT=9992
+# incoming ajp traffic
+SERVER_AJP_PORT=9009
+# listen addresses
+# for incoming application traffic (can use 0.0.0.0 for all)
+SERVER_LISTEN_ADDRESS=`hostname`
+# for incoming management server traffic (use 127.0.0.1 to prevent external)
+#SERVER_MGMT_ADDRESS=127.0.0.1
+SERVER_MGMT_ADDRESS=10.118.3.136
+# instance specific java options
+SERVER_JAVA_OPTIONS=
+
