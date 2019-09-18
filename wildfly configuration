@@ -1,0 +1,31 @@
+#CPE WILDFLY CONFIGURATION
+#Pebake steps
+#create users and groups
+/usr/sbin/groupadd -g 713 mdware;
+/usr/sbin/useradd -g mdware jboss;
+yum -y install sendmail;
+yum -y install sharutils;
+yum -y install sendmail-cf;
+#Create Directories
+mkdir -p /apps/opt/incoming ; chmod 755 /apps/opt/incoming;
+#Download Packages
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/opt/incoming/VZjdk-1.8.0_172_b31_64bit-Linux.rpm https://oneartifactory.verizon.com/artifactory/VVOV_SSP/WILDFLY_PACKAGES/VZjdk-1.8.0_172_b31_64bit-Linux.rpm
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/opt/incoming/VZwldfly-17.0.0.Final-Linux.rpm https://oneartifactory.verizon.com/artifactory/VVOV_SSP/WILDFLY_PACKAGES/VZwldfly-17.0.0.Final-Linux.rpm
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/opt/incoming/VZwfscr-1.8-Linux.rpm https://oneartifactory.verizon.com/artifactory/VVOV_SSP/WILDFLY_PACKAGES/VZwfscr-1.8-Linux.rpm
+#List Packages - rpm -qi {VZjdk,VZwldfly,VZwfscr}
+#Remove packages - rpm -ev {VZwfscr-,VZwldfly-,VZjdk-}
+#Install Packages
+rpm -ihv --ignorearch --ignoreos --nodeps --force /apps/opt/incoming/VZjdk-1.8.0_172_b31_64bit-Linux.rpm
+rpm -ihv --ignorearch --ignoreos --nodeps --force /apps/opt/incoming/VZwldfly-13.0.0.Final-Linux.rpm
+rpm -ihv --ignorearch --ignoreos --nodeps --force /apps/opt/incoming/VZwfscr-1.0-Linux.rpm
+#Server Configuration
+perl -pi -e 's/127.0.0.1/10.118.3.136/g' /apps/opt/wildfly/wildfly-17.0.0.Final/standalone/configuration/standalone.xml
+perl -pi -e 's/127.0.0.1/10.118.3.136/g' /apps/opt/wildfly/wildfly-17.0.0.Final/domain/configuration/domain.xml
+mkdir -p /apps/opt/wildfly/config ; chown -R jboss:mdware /apps/opt/wildfly/config
+cp -r /apps/opt/wildfly/wildfly-17.0.0.Final/standalone /apps/opt/wildfly/config/cpe-srv01
+mkdir -p /apps/opt/wildfly/config/cpe-srv01/{modules,logs,data}
+#chgrp -R mdware /apps/opt/wildfly/config/cpe-srv01 ; chmod -R 775 /apps/opt/wildfly/config/cpe-srv01
+#egrep "jboss.bind.address|jboss.http.port" /apps/opt/wildfly/config/cpe-srv01/configuration/standalone.xml
+#Add path as environment variable
+echo -e "export JAVA_HOME=/apps/opt/jdk/jdk180_172_64\nexport PATH=\$JAVA_HOME/bin:\$PATH" >> ~/.bash_profile
+echo -e "export WILDFLY_HOME=/apps/opt/wildfly/wildfly-17.0.0.Final" >> ~/.bash_profile
