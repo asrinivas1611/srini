@@ -111,3 +111,100 @@ yes/no? no
 #perl -pi -e 's/127.0.0.1/10.118.3.136/g' /apps/opt/wildfly/wildfly-17.0.0.Final/domain/configuration/domain.xml
 #egrep "jboss.bind.address|jboss.http.port" /apps/opt/cpe/config/cpe-srv01/configuration/standalone.xml
 #perl -pi -e 's/127.0.0.1/10.118.3.136/g' /apps/opt/cpe/config/cpe-srv01/configuration/standalone.xml
+
+
+
+
+
+
+############################################################
+MQ Configuration for cpe
+############################################################
+
+#CPE MQ CONFIGURATION on Wildfly server
+/usr/sbin/groupadd -g 46005 mqm;
+/usr/sbin/useradd -u 46005 -g 46005 mqm;
+/usr/sbin/usermod -G mqm root;
+
+yum -y install sharutils;
+yum -y install sendmail;
+yum -y install sendmail-cf;
+yum -y erase tomcatjss;
+yum -y install krb5-workstation;
+yum -y install mod_auth_kerb;
+yum -y install elinks;
+yum -y install mailcap;
+yum -y install apr-devel;
+yum -y install apr-util-devel;
+yum -y install apr-util-ldap;
+yum -y install VZdirlnk;
+yum -y install VZfixlog;
+
+chmod 777 /apps/etc/SSI;
+mkdir /apps/etc/SSI/appssi;
+chmod 777 /apps/etc/SSI/appssi;
+mkdir /apps/opt/mqm;
+
+chown -R mqm:mqm /apps/opt/mqm;
+
+/sbin/mkswap /dev/xvdc;
+/sbin/swapon /dev/xvdc;
+/usr/sbin/sysctl -w  "kernel.sem=250 128000 32 512";
+
+
+`echo "/dev/xvdc      swap swap  defaults        1 2" >> /etc/fstab
+
+echo "
+kernel.shmmni = 4096
+kernel.shmall = 2097152
+kernel.shmmax = 268435456
+kernel.sem = 500 256000 250 1024
+fs.file-max = 524288" >> /etc/sysctl.conf
+
+echo "jboss           soft    nofile          90000
+jboss           hard    nofile          90000
+
+jboss    soft   memlock   unlimited
+jboss    hard   memlock   unlimited
+
+jboss     soft nproc 397311
+jboss     hard nproc 397311
+mqm              hard    nofile          10240
+mqm              soft    nofile          10240
+root             hard    nofile          10240
+root             soft    nofile          10240
+mqm             hard    nproc           4096
+mqm             soft    nproc           4096
+root            hard    nproc           4096
+root            soft    nproc           4096" >> /etc/security/limits.conf`
+
+
+#Download SSI
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/etc/SSI/host.`hostname`.CPE.UAT.QM1 https://oneartifactory.verizon.com/artifactory/FDUV_VzBroadbandPartnerServ/LGYV_SSI/host.Dynamic_Hostname.CPE.UAT.QM1
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/etc/SSI/host.`hostname`.CPE.UAT.QM2 https://oneartifactory.verizon.com/artifactory/FDUV_VzBroadbandPartnerServ/LGYV_SSI/host.Dynamic_Hostname.CPE.UAT.QM2
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/etc/SSI/host.`hostname`.CPEC3OUATQM1 https://oneartifactory.verizon.com/artifactory/FDUV_VzBroadbandPartnerServ/LGYV_SSI/host.Dynamic_Hostname.CPEC3OUATQM1
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/etc/SSI/host.`hostname`.CPEC3OUATQM2 https://oneartifactory.verizon.com/artifactory/FDUV_VzBroadbandPartnerServ/LGYV_SSI/host.Dynamic_Hostname.CPEC3OUATQM2
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/etc/SSI/host.`hostname`.CPESSP.UAT.QM1 https://oneartifactory.verizon.com/artifactory/FDUV_VzBroadbandPartnerServ/LGYV_SSI/host.Dynamic_Hostname.CPESSP.UAT.QM1
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/etc/SSI/host.`hostname`.CPESSP.UAT.QM2 https://oneartifactory.verizon.com/artifactory/FDUV_VzBroadbandPartnerServ/LGYV_SSI/host.Dynamic_Hostname.CPESSP.UAT.QM2
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/etc/SSI/host.`hostname`.CPEIVP.UAT.QM1 https://oneartifactory.verizon.com/artifactory/FDUV_VzBroadbandPartnerServ/LGYV_SSI/host.Dynamic_Hostname.CPEIVP.UAT.QM1
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/etc/SSI/host.`hostname`.CPEIVP.UAT.QM2 https://oneartifactory.verizon.com/artifactory/FDUV_VzBroadbandPartnerServ/LGYV_SSI/host.Dynamic_Hostname.CPEIVP.UAT.QM2
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/etc/SSI/host.`hostname`.CPEHNM.UAT.QM2 https://oneartifactory.verizon.com/artifactory/FDUV_VzBroadbandPartnerServ/LGYV_SSI/host.Dynamic_Hostname.CPEHNM.UAT.QM2
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/etc/SSI/host.`hostname`.CPEHNM.UAT.QM1 https://oneartifactory.verizon.com/artifactory/FDUV_VzBroadbandPartnerServ/LGYV_SSI/host.Dynamic_Hostname.CPEHNM.UAT.QM1
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/etc/SSI/host.`hostname`.CPEINT.UAT.QM2 https://oneartifactory.verizon.com/artifactory/FDUV_VzBroadbandPartnerServ/LGYV_SSI/host.Dynamic_Hostname.CPEINT.UAT.QM2
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/etc/SSI/host.`hostname`.CPEINT.UAT.QM1 https://oneartifactory.verizon.com/artifactory/FDUV_VzBroadbandPartnerServ/LGYV_SSI/host.Dynamic_Hostname.CPEINT.UAT.QM1
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/etc/SSI/host.`hostname`.mqmcert https://oneartifactory.verizon.com/artifactory/FDUV_VzBroadbandPartnerServ/LGYV_SSI/host.Dynamic_Hostname.mqmcert
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/etc/SSI/host.`hostname`.mqm https://oneartifactory.verizon.com/artifactory/FDUV_VzBroadbandPartnerServ/LGYV_SSI/host.Dynamic_Hostname.mqm
+
+
+find /apps/etc/SSI -type f | xargs perl -pi -e "s/Dynamic_Hostname/$HOSTNAME/g";
+find /apps/etc/SSI -type f | xargs perl -pi -e "s/Dynamic_IP/`hostname -i`/g";
+
+
+
+#Download Packages
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/opt/incoming/VZmqm-7.5.0.4-Linux64.5.rpm https://oneartifactory.verizon.com/artifactory/VVOV_SSP/EQHV_DOMAIN_BUILD_PACKAGES/VZmqm-7.5.0.4-Linux64.5.rpm
+curl -u SVC-CMB-INFRA-DEPLOY:dI16mC16rdI16mC16rdI16mC16rdI -o /apps/opt/incoming/VZmqmcrt-7.5-Linux2.rpm https://oneartifactory.verizon.com/artifactory/VVOV_SSP/EQHV_DOMAIN_BUILD_PACKAGES/VZmqmcrt-7.5-Linux2.rpm
+#Install Pakages
+rpm -ihv --ignorearch --ignoreos --nodeps --force /apps/opt/incoming/VZmqm-7.5.0.4-Linux64.5.rpm
+rpm -ihv --ignorearch --ignoreos --nodeps --force /apps/opt/incoming/VZmqmcrt-7.5-Linux2.rpm
+
